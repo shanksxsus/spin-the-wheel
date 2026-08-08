@@ -194,119 +194,11 @@
   }
 
   @media (max-width: 600px) {
-    .corner-cat {
-      width: clamp(70px, 21vw, 115px);
+
+    .top-cat {
+      top: calc(50% - 135px);
+      width: 90px;
     }
-    .left-cat { left: 0; }
-    .right-cat { right: 0; }
-  }
-
-  #soundPrompt {
-    position: absolute;
-    left: 50%;
-    top: calc(50% + clamp(125px, 13vw, 165px));
-    transform: translateX(-50%);
-    z-index: 8;
-    border: 1px solid rgba(255,255,255,.8);
-    border-radius: 999px;
-    padding: 7px 14px;
-    background: rgba(0,0,0,.7);
-    color: #fff;
-    font: 700 11px/1 Arial, sans-serif;
-    letter-spacing: .16em;
-    cursor: pointer;
-    box-shadow:
-      0 0 8px #fff,
-      0 0 18px #ff00e6,
-      0 0 28px #00ffff;
-    animation: soundPulse 1.4s ease-in-out infinite alternate;
-  }
-
-  #soundPrompt.hidden {
-    display: none;
-  }
-
-  @keyframes soundPulse {
-    from { opacity: .65; }
-    to { opacity: 1; }
-  }
-
-  .scanlines {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 3px,
-      rgba(255,255,255,.018) 4px
-    );
-    mix-blend-mode: screen;
-    z-index: 5;
-  }
-
-  @keyframes rgb {
-    0%, 100% {
-      filter: hue-rotate(0deg);
-    }
-    50% {
-      filter: hue-rotate(180deg);
-    }
-  }
-
-  @keyframes pulse {
-    from { transform: scale(.985); }
-    to   { transform: scale(1.015); }
-  }
-
-  @keyframes red {
-    0%, 100% { transform: translate(-5px, 0); }
-    50% { transform: translate(-11px, 2px); }
-  }
-
-  @keyframes cyan {
-    0%, 100% { transform: translate(5px, 0); }
-    50% { transform: translate(11px, -2px); }
-  }
-
-  @keyframes aura {
-    to { transform: rotate(360deg) scale(1.08); }
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  @media (max-width: 600px) {
-    .word {
-      font-size: clamp(1.65rem, 8vw, 5rem);
-      text-shadow:
-        0 0 3px #fff,
-        0 0 9px #fff,
-        0 0 18px #ff0055,
-        0 0 34px #ff00e6,
-        0 0 55px #00bfff,
-        -4px 0 0 rgba(255,0,55,.85),
-        4px 0 0 rgba(0,255,255,.85);
-    }
-
-    .word::before { transform: translate(-3px, 0); }
-    .word::after  { transform: translate(3px, 0); }
-
-    .spinning-cat {
-      width: min(46vw, 180px);
-      top: calc(50% + 82px);
-    }
-
-    .corner-cat {
-      width: clamp(58px, 20vw, 100px);
-      bottom: 38px;
-    }
-
-    .cat-left {
-    left: 14%;
-  }
-    .cat-right { right: 5px; }
 
     .stage::before {
       width: 100vw;
@@ -325,13 +217,12 @@
 </head>
 <body>
   <main class="stage">
+    <img class="top-cat" src="cute-cat.gif" alt="Dancing cat">
     <h1 class="word" data-text="Chutiya Unpaid villain/Ray">Chutiya Unpaid villain/Ray</h1>
     <div class="scanlines"></div>
   <img class="corner-cat left-cat" src="cute-cat.gif" alt="">
     <img class="corner-cat right-cat" src="cute-cat.gif" alt="">
     <video id="catVideo" class="spinning-cat" src="spinning-cat.mp4" autoplay muted loop playsinline preload="auto"></video>
-    <img class="corner-cat cat-left" src="cute-cat.gif" alt="Dancing cat">
-    <img class="corner-cat cat-right" src="cute-cat.gif" alt="Dancing cat">
   <button id="soundPrompt" type="button" aria-label="Enable sound">TAP FOR SOUND</button>
   </main>
 
