@@ -2,259 +2,355 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>thuperman</title>
-<style>
-  * { box-sizing: border-box; }
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  html, body {
+<title>thuperman</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
     width: 100%;
     height: 100%;
     margin: 0;
     overflow: hidden;
-  }
-
-  body {
     background: #000;
-    font-family: Arial, Helvetica, sans-serif;
-    -webkit-tap-highlight-color: transparent;
-  }
+}
 
-  .stage {
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* =========================
+   MAIN SCREEN
+========================= */
+
+.stage {
     position: relative;
     width: 100vw;
-    height: 100svh;
-    min-height: 100dvh;
+    height: 100vh;
     overflow: hidden;
+
+    display: grid;
+    place-items: center;
+
+    background: #000;
     isolation: isolate;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    background:
-      radial-gradient(circle at 50% 50%, #080808 0%, #020202 42%, #000 72%);
-  }
+}
 
-  .stage::before {
-    content: "";
-    position: absolute;
-    width: min(75vw, 850px);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: conic-gradient(
-      from 0deg,
-      #ff003c, #ff00ea, #6a00ff, #00b7ff,
-      #00ffd5, #00ff3c, #fff000, #ff003c
-    );
-    filter: blur(100px);
-    opacity: .18;
-    animation: aura 5s linear infinite;
-    z-index: -2;
-  }
+/* =========================
+   BACKGROUND CAT VIDEO
+========================= */
 
-  .stage::after {
-    content: "";
-    position: absolute;
-    inset: -20%;
-    background: conic-gradient(
-      from 0deg,
-      transparent 0deg,
-      rgba(255,0,80,.04) 45deg,
-      transparent 90deg,
-      rgba(0,180,255,.04) 180deg,
-      transparent 230deg,
-      rgba(0,255,120,.04) 315deg,
-      transparent 360deg
-    );
-    animation: spin 14s linear infinite;
-    z-index: -1;
-  }
-
-  /* ONE cat GIF — centered above the text */
-  .top-cat {
-    display: block;
-    flex: 0 0 auto;
-    width: 135px;
-    height: 135px;
-    object-fit: contain;
-    z-index: 4;
-    pointer-events: none;
-    filter:
-      drop-shadow(0 0 6px #fff)
-      drop-shadow(0 0 16px #ff00e6)
-      drop-shadow(0 0 28px #00ffff);
-  }
-
-  .word {
-    position: relative;
-    flex: 0 0 auto;
-    margin: 0;
-    padding: 0 .08em;
-    color: #fff;
-    font-size: clamp(2rem, 9vw, 8rem);
-    line-height: .9;
-    font-weight: 900;
-    letter-spacing: -.075em;
-    white-space: nowrap;
-    max-width: 96vw;
-    overflow: visible;
-    user-select: none;
-    text-align: center;
-    z-index: 4;
-
-    text-shadow:
-      0 0 3px #fff,
-      0 0 8px #fff,
-      0 0 18px #ff0055,
-      0 0 34px #ff0055,
-      0 0 58px #ff00e6,
-      0 0 90px #6a00ff,
-      0 0 130px #00bfff,
-      -8px 0 0 rgba(255,0,55,.8),
-      8px 0 0 rgba(0,255,255,.8);
-
-    animation:
-      rgb 2.8s linear infinite,
-      pulse 1.7s ease-in-out infinite alternate;
-  }
-
-  .word::before,
-  .word::after {
-    content: attr(data-text);
+#catVideo {
     position: absolute;
     inset: 0;
-    pointer-events: none;
-    color: transparent;
-    -webkit-text-stroke: 2px;
-    opacity: .8;
-  }
 
-  .word::before {
-    -webkit-text-stroke-color: #ff0055;
-    transform: translate(-6px, 0);
-    filter: blur(1px);
-    animation: red 1.2s steps(2, end) infinite;
-  }
-
-  .word::after {
-    -webkit-text-stroke-color: #00ffff;
-    transform: translate(6px, 0);
-    filter: blur(1px);
-    animation: cyan .9s steps(2, end) infinite;
-  }
-
-  /* Small video directly below the text */
-  .video-wrap {
-    position: relative;
-    flex: 0 0 auto;
-    width: 220px;
-    height: 124px;
-    z-index: 3;
-    filter:
-      drop-shadow(0 0 6px #fff)
-      drop-shadow(0 0 14px #ff00e6)
-      drop-shadow(0 0 22px #00ffff);
-  }
-
-  #catVideo {
-    display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    border: 0;
-    outline: 0;
-  }
 
-  .scanlines {
+    object-fit: cover;
+
+    z-index: -3;
+    pointer-events: none;
+}
+
+/* Darken video slightly */
+.video-overlay {
     position: absolute;
     inset: 0;
+
+    z-index: -2;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(0, 0, 0, 0.05),
+            rgba(0, 0, 0, 0.55)
+        ),
+        rgba(0, 0, 0, 0.15);
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.content {
+    position: relative;
+    z-index: 3;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+/* =========================
+   FOUR CORNER CATS
+========================= */
+
+.corner-cat {
+    position: absolute;
+
+    width: 120px;
+    height: 120px;
+
+    object-fit: contain;
+
+    z-index: 5;
+
     pointer-events: none;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 3px,
-      rgba(255,255,255,.018) 4px
-    );
-    mix-blend-mode: screen;
+
+    filter:
+        drop-shadow(0 0 5px #fff)
+        drop-shadow(0 0 12px #ff00e6)
+        drop-shadow(0 0 25px #00ffff)
+        drop-shadow(0 0 40px #008cff);
+}
+
+/* Top left */
+.cat-tl {
+    top: 7%;
+    left: 7%;
+}
+
+/* Top right */
+.cat-tr {
+    top: 7%;
+    right: 7%;
+}
+
+/* Bottom left */
+.cat-bl {
+    bottom: 7%;
+    left: 7%;
+}
+
+/* Bottom right */
+.cat-br {
+    bottom: 7%;
+    right: 7%;
+}
+
+/* =========================
+   MAIN TEXT
+========================= */
+
+.word {
+    position: relative;
+
+    margin: 0;
+
+    color: white;
+
+    font-size: clamp(2rem, 9vw, 8rem);
+
+    line-height: 0.9;
+
+    font-weight: 900;
+
+    letter-spacing: -0.075em;
+
+    white-space: nowrap;
+
+    max-width: 96vw;
+
+    text-align: center;
+
+    user-select: none;
+
+    /* RGB glow */
+    text-shadow:
+        0 0 3px #fff,
+        0 0 8px #fff,
+
+        0 0 18px #ff0055,
+        0 0 34px #ff0055,
+
+        0 0 58px #ff00e6,
+
+        0 0 90px #6a00ff,
+
+        0 0 130px #00bfff,
+
+        -8px 0 0 rgba(255, 0, 55, 0.85),
+        8px 0 0 rgba(0, 255, 255, 0.85);
+
+    animation:
+        rgb 2.8s linear infinite,
+        pulse 1.7s ease-in-out infinite alternate;
+}
+
+/* =========================
+   RGB GLITCH LAYERS
+========================= */
+
+.word::before,
+.word::after {
+    content: attr(data-text);
+
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
+    color: transparent;
+
+    -webkit-text-stroke: 2px;
+
+    opacity: 0.8;
+}
+
+/* RED OFFSET */
+
+.word::before {
+    -webkit-text-stroke-color: #ff0055;
+
+    transform: translate(-6px, 0);
+
+    filter: blur(1px);
+
+    animation: red 1.2s steps(2, end) infinite;
+}
+
+/* CYAN OFFSET */
+
+.word::after {
+    -webkit-text-stroke-color: #00ffff;
+
+    transform: translate(6px, 0);
+
+    filter: blur(1px);
+
+    animation: cyan 0.9s steps(2, end) infinite;
+}
+
+/* =========================
+   SCANLINES
+========================= */
+
+.scanlines {
+    position: absolute;
+    inset: 0;
+
     z-index: 10;
-  }
 
-  @keyframes rgb {
-    0%, 100% { filter: hue-rotate(0deg); }
-    50% { filter: hue-rotate(180deg); }
-  }
+    pointer-events: none;
 
-  @keyframes pulse {
-    from { transform: scale(.985); }
-    to { transform: scale(1.015); }
-  }
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0,
+            transparent 3px,
+            rgba(255,255,255,0.018) 4px
+        );
 
-  @keyframes red {
-    0%, 100% { transform: translate(-5px, 0); }
-    50% { transform: translate(-11px, 2px); }
-  }
+    mix-blend-mode: screen;
+}
 
-  @keyframes cyan {
-    0%, 100% { transform: translate(5px, 0); }
-    50% { transform: translate(11px, -2px); }
-  }
+/* =========================
+   ANIMATIONS
+========================= */
 
-  @keyframes aura {
-    to { transform: rotate(360deg) scale(1.08); }
-  }
+@keyframes rgb {
 
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  @media (max-width: 600px) {
-    .stage {
-      gap: 10px;
+    0%,
+    100% {
+        filter: hue-rotate(0deg);
     }
 
-    .top-cat {
-      width: 90px;
-      height: 90px;
+    50% {
+        filter: hue-rotate(180deg);
+    }
+}
+
+@keyframes pulse {
+
+    from {
+        transform: scale(0.985);
+    }
+
+    to {
+        transform: scale(1.015);
+    }
+}
+
+@keyframes red {
+
+    0%,
+    100% {
+        transform: translate(-5px, 0);
+    }
+
+    50% {
+        transform: translate(-11px, 2px);
+    }
+}
+
+@keyframes cyan {
+
+    0%,
+    100% {
+        transform: translate(5px, 0);
+    }
+
+    50% {
+        transform: translate(11px, -2px);
+    }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    .corner-cat {
+        width: 75px;
+        height: 75px;
+    }
+
+    .cat-tl {
+        top: 6%;
+        left: 6%;
+    }
+
+    .cat-tr {
+        top: 6%;
+        right: 6%;
+    }
+
+    .cat-bl {
+        bottom: 6%;
+        left: 6%;
+    }
+
+    .cat-br {
+        bottom: 6%;
+        right: 6%;
     }
 
     .word {
-      font-size: clamp(1.8rem, 8vw, 5rem);
+        font-size: clamp(1.8rem, 8vw, 5rem);
     }
+}
 
-    .video-wrap {
-      width: 180px;
-      height: 101px;
-    }
-
-    .stage::before {
-      width: 100vw;
-      filter: blur(70px);
-      opacity: .2;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .word,
-    .word::before,
-    .word::after,
-    .stage::before,
-    .stage::after {
-      animation: none;
-    }
-  }
 </style>
 </head>
+
 <body>
-  <main class="stage">
-    <img class="top-cat" src="cute-cat.gif" alt="Dancing cat">
 
-    <h1 class="word" data-text="Chutiya Unpaid villain/Ray">
-      Chutiya Unpaid villain/Ray
-    </h1>
+<main class="stage">
 
-    <div class="video-wrap">
-      <video
+    <!-- FULL SCREEN CAT VIDEO -->
+    <video
         id="catVideo"
         src="spinning-cat.mp4"
         autoplay
@@ -262,32 +358,53 @@
         loop
         playsinline
         preload="auto">
-      </video>
-    </div>
+    </video>
 
+    <!-- DARK OVERLAY -->
+    <div class="video-overlay"></div>
+
+
+    <!-- MAIN CONTENT -->
+    <section class="content">
+
+        <!-- FOUR CATS -->
+
+        <img
+            class="corner-cat cat-tl"
+            src="cute-cat.gif"
+            alt="Cat">
+
+        <img
+            class="corner-cat cat-tr"
+            src="cute-cat.gif"
+            alt="Cat">
+
+        <img
+            class="corner-cat cat-bl"
+            src="cute-cat.gif"
+            alt="Cat">
+
+        <img
+            class="corner-cat cat-br"
+            src="cute-cat.gif"
+            alt="Cat">
+
+
+        <!-- MAIN TEXT -->
+
+        <h1
+            class="word"
+            data-text="Chutiya Unpaid villain/Ray">
+            Chutiya Unpaid villain/Ray
+        </h1>
+
+    </section>
+
+
+    <!-- CRT SCANLINES -->
     <div class="scanlines"></div>
-  </main>
 
-<script>
-  const video = document.getElementById("catVideo");
+</main>
 
-  video.muted = true;
-  video.volume = 1;
-  video.play().catch(() => {});
-
-  async function enableSound() {
-    if (!video.muted) return;
-    video.muted = false;
-    video.volume = 1;
-    try {
-      await video.play();
-    } catch (error) {
-      video.muted = true;
-    }
-  }
-
-  document.addEventListener("click", enableSound, { once: true });
-  document.addEventListener("touchstart", enableSound, { once: true, passive: true });
-</script>
 </body>
 </html>
