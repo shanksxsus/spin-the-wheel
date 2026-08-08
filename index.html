@@ -134,6 +134,23 @@
   }
 
   /* Subtle CRT scanlines */
+  .spinning-cat {
+    position: absolute;
+    width: clamp(150px, 18vw, 230px);
+    height: auto;
+    left: 50%;
+    top: calc(50% + clamp(85px, 8vw, 120px));
+    transform: translateX(-50%);
+    border: 0;
+    outline: 0;
+    filter:
+      drop-shadow(0 0 8px #fff)
+      drop-shadow(0 0 22px #ff00e6)
+      drop-shadow(0 0 38px #00ffff);
+    z-index: 3;
+    pointer-events: none;
+  }
+
   .scanlines {
     position: absolute;
     inset: 0;
@@ -196,6 +213,11 @@
     .word::before { transform: translate(-3px, 0); }
     .word::after  { transform: translate(3px, 0); }
 
+    .spinning-cat {
+      width: min(46vw, 180px);
+      top: calc(50% + 82px);
+    }
+
     .stage::before {
       width: 100vw;
       filter: blur(70px);
@@ -215,6 +237,7 @@
   <main class="stage">
     <h1 class="word" data-text="Chutiya Unpaid villain/Ray">Chutiya Unpaid villain/Ray</h1>
     <div class="scanlines"></div>
-  </main>
+  <video class="spinning-cat" src="spinning-cat.mp4" autoplay muted loop playsinline preload="auto"></video>
+    </main>
 </body>
 </html>
