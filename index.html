@@ -16,8 +16,6 @@
 
   body {
     background: #000;
-    display: grid;
-    place-items: center;
     font-family: Arial, Helvetica, sans-serif;
     -webkit-tap-highlight-color: transparent;
   }
@@ -27,15 +25,17 @@
     width: 100vw;
     height: 100svh;
     min-height: 100dvh;
-    display: grid;
-    place-items: center;
     overflow: hidden;
     isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
     background:
       radial-gradient(circle at 50% 50%, #080808 0%, #020202 42%, #000 72%);
   }
 
-  /* Huge soft RGB aura behind the word */
   .stage::before {
     content: "";
     position: absolute;
@@ -44,14 +44,8 @@
     border-radius: 50%;
     background: conic-gradient(
       from 0deg,
-      #ff003c,
-      #ff00ea,
-      #6a00ff,
-      #00b7ff,
-      #00ffd5,
-      #00ff3c,
-      #fff000,
-      #ff003c
+      #ff003c, #ff00ea, #6a00ff, #00b7ff,
+      #00ffd5, #00ff3c, #fff000, #ff003c
     );
     filter: blur(100px);
     opacity: .18;
@@ -77,8 +71,24 @@
     z-index: -1;
   }
 
+  /* ONE cat GIF — centered above the text */
+  .top-cat {
+    display: block;
+    flex: 0 0 auto;
+    width: 135px;
+    height: 135px;
+    object-fit: contain;
+    z-index: 4;
+    pointer-events: none;
+    filter:
+      drop-shadow(0 0 6px #fff)
+      drop-shadow(0 0 16px #ff00e6)
+      drop-shadow(0 0 28px #00ffff);
+  }
+
   .word {
     position: relative;
+    flex: 0 0 auto;
     margin: 0;
     padding: 0 .08em;
     color: #fff;
@@ -91,8 +101,8 @@
     overflow: visible;
     user-select: none;
     text-align: center;
+    z-index: 4;
 
-    /* RGB separation + insane glow */
     text-shadow:
       0 0 3px #fff,
       0 0 8px #fff,
@@ -104,32 +114,11 @@
       -8px 0 0 rgba(255,0,55,.8),
       8px 0 0 rgba(0,255,255,.8);
 
-    animation: rgb 2.8s linear infinite, pulse 1.7s ease-in-out infinite alternate;
+    animation:
+      rgb 2.8s linear infinite,
+      pulse 1.7s ease-in-out infinite alternate;
   }
 
-  .reveal-button {
-    border: 0;
-    padding: 0;
-    margin: 0;
-    background: transparent;
-    font: inherit;
-    cursor: pointer;
-    -webkit-appearance: none;
-    appearance: none;
-    color: #fff;
-  }
-
-  .reveal-button:focus-visible {
-    outline: 2px solid #fff;
-    outline-offset: 10px;
-  }
-
-  .reveal-button.revealed {
-    cursor: default;
-  }
-
-
-  /* Chromatic ghost layers */
   .word::before,
   .word::after {
     content: attr(data-text);
@@ -155,44 +144,90 @@
     animation: cyan .9s steps(2, end) infinite;
   }
 
-  /* Subtle CRT scanlines */
-  .spinning-cat {
-    position: absolute;
-    width: clamp(150px, 18vw, 230px);
-    height: auto;
-    left: 50%;
-    top: calc(50% + clamp(85px, 8vw, 120px));
-    transform: translateX(-50%);
-    border: 0;
-    outline: 0;
-    filter:
-      drop-shadow(0 0 8px #fff)
-      drop-shadow(0 0 22px #ff00e6)
-      drop-shadow(0 0 38px #00ffff);
+  /* Small video directly below the text */
+  .video-wrap {
+    position: relative;
+    flex: 0 0 auto;
+    width: 220px;
+    height: 124px;
     z-index: 3;
-    pointer-events: none;
+    filter:
+      drop-shadow(0 0 6px #fff)
+      drop-shadow(0 0 14px #ff00e6)
+      drop-shadow(0 0 22px #00ffff);
   }
 
-  .left-cat { left: 1.5%; }
-  .right-cat {
-    right: 1.5%;
-    transform: scaleX(-1);
+  #catVideo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 0;
+    outline: 0;
+  }
+
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 3px,
+      rgba(255,255,255,.018) 4px
+    );
+    mix-blend-mode: screen;
+    z-index: 10;
+  }
+
+  @keyframes rgb {
+    0%, 100% { filter: hue-rotate(0deg); }
+    50% { filter: hue-rotate(180deg); }
+  }
+
+  @keyframes pulse {
+    from { transform: scale(.985); }
+    to { transform: scale(1.015); }
+  }
+
+  @keyframes red {
+    0%, 100% { transform: translate(-5px, 0); }
+    50% { transform: translate(-11px, 2px); }
+  }
+
+  @keyframes cyan {
+    0%, 100% { transform: translate(5px, 0); }
+    50% { transform: translate(11px, -2px); }
+  }
+
+  @keyframes aura {
+    to { transform: rotate(360deg) scale(1.08); }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 
   @media (max-width: 600px) {
+    .stage {
+      gap: 10px;
+    }
+
     .top-cat {
-      top: calc(50% - 185px);
       width: 90px;
       height: 90px;
     }
 
-    .spinning-cat {
-      top: calc(50% + 82px);
+    .word {
+      font-size: clamp(1.8rem, 8vw, 5rem);
+    }
+
+    .video-wrap {
       width: 180px;
       height: 101px;
     }
 
-.stage::before {
+    .stage::before {
       width: 100vw;
       filter: blur(70px);
       opacity: .2;
@@ -200,8 +235,11 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .word, .word::before, .word::after,
-    .stage::before, .stage::after {
+    .word,
+    .word::before,
+    .word::after,
+    .stage::before,
+    .stage::after {
       animation: none;
     }
   }
@@ -209,82 +247,47 @@
 </head>
 <body>
   <main class="stage">
-    
     <img class="top-cat" src="cute-cat.gif" alt="Dancing cat">
-    <h1 class="word" data-text="Chutiya Unpaid villain/Ray">Chutiya Unpaid villain/Ray</h1>
+
+    <h1 class="word" data-text="Chutiya Unpaid villain/Ray">
+      Chutiya Unpaid villain/Ray
+    </h1>
+
+    <div class="video-wrap">
+      <video
+        id="catVideo"
+        src="spinning-cat.mp4"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto">
+      </video>
+    </div>
+
     <div class="scanlines"></div>
-  
-    
-    <video id="catVideo" class="source-video" src="spinning-cat.mp4" autoplay muted loop playsinline preload="auto"></video>
-    <canvas id="videoCanvas" class="spinning-cat" width="854" height="480" aria-label="Spinning cat video"></canvas>
-  <button id="soundPrompt" type="button" aria-label="Enable sound">TAP FOR SOUND</button>
   </main>
 
-
-
 <script>
-  (() => {
-    const video = document.getElementById("catVideo");
-    const canvas = document.getElementById("videoCanvas");
-    const prompt = document.getElementById("soundPrompt");
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  const video = document.getElementById("catVideo");
 
-    if (!video || !canvas || !ctx) return;
+  video.muted = true;
+  video.volume = 1;
+  video.play().catch(() => {});
 
-    video.muted = true;
+  async function enableSound() {
+    if (!video.muted) return;
+    video.muted = false;
     video.volume = 1;
-
-    function drawFrame() {
-      if (video.readyState >= 2) {
-        const w = canvas.width;
-        const h = canvas.height;
-        ctx.drawImage(video, 0, 0, w, h);
-
-        const frame = ctx.getImageData(0, 0, w, h);
-        const data = frame.data;
-
-        // Remove the bright green background from the uploaded video.
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-
-          if (g > 105 && g > r * 1.35 && g > b * 1.25) {
-            data[i + 3] = 0;
-          } else if (g > 85 && g > r * 1.15 && g > b * 1.1) {
-            const strength = Math.min(1, (g - Math.max(r, b)) / 90);
-            data[i + 3] = Math.round(255 * (1 - strength));
-          }
-        }
-
-        ctx.putImageData(frame, 0, 0);
-      }
-      requestAnimationFrame(drawFrame);
+    try {
+      await video.play();
+    } catch (error) {
+      video.muted = true;
     }
+  }
 
-    video.play().catch(() => {});
-    drawFrame();
-
-    async function enableSound() {
-      video.muted = false;
-      video.volume = 1;
-      try {
-        await video.play();
-        if (prompt) prompt.classList.add("hidden");
-      } catch (e) {}
-    }
-
-    if (prompt) prompt.addEventListener("click", enableSound);
-
-    document.addEventListener("click", (event) => {
-      if (event.target !== prompt && video.muted) enableSound();
-    }, { once: true });
-
-    document.addEventListener("touchstart", () => {
-      if (video.muted) enableSound();
-    }, { once: true, passive: true });
-  })();
+  document.addEventListener("click", enableSound, { once: true });
+  document.addEventListener("touchstart", enableSound, { once: true, passive: true });
 </script>
-
 </body>
 </html>
