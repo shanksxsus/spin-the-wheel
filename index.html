@@ -181,13 +181,18 @@
 
   @media (max-width: 600px) {
     .top-cat {
-      top: calc(50% - 135px);
+      top: calc(50% - 185px);
       width: 90px;
+      height: 90px;
     }
 
+    .spinning-cat {
+      top: calc(50% + 82px);
+      width: 180px;
+      height: 101px;
+    }
 
-
-    .stage::before {
+.stage::before {
       width: 100vw;
       filter: blur(70px);
       opacity: .2;
@@ -210,7 +215,8 @@
     <div class="scanlines"></div>
   
     
-    <video id="catVideo" class="spinning-cat" src="spinning-cat.mp4" autoplay muted loop playsinline preload="auto"></video>
+    <video id="catVideo" class="source-video" src="spinning-cat.mp4" autoplay muted loop playsinline preload="auto"></video>
+    <canvas id="videoCanvas" class="spinning-cat" width="854" height="480" aria-label="Spinning cat video"></canvas>
   <button id="soundPrompt" type="button" aria-label="Enable sound">TAP FOR SOUND</button>
   </main>
 
@@ -219,35 +225,59 @@
 <script>
   (() => {
     const video = document.getElementById("catVideo");
+    const canvas = document.getElementById("videoCanvas");
     const prompt = document.getElementById("soundPrompt");
-    if (!video) return;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
-    // Autoplay is allowed while muted.
+    if (!video || !canvas || !ctx) return;
+
     video.muted = true;
     video.volume = 1;
+
+    function drawFrame() {
+      if (video.readyState >= 2) {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.drawImage(video, 0, 0, w, h);
+
+        const frame = ctx.getImageData(0, 0, w, h);
+        const data = frame.data;
+
+        // Remove the bright green background from the uploaded video.
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+
+          if (g > 105 && g > r * 1.35 && g > b * 1.25) {
+            data[i + 3] = 0;
+          } else if (g > 85 && g > r * 1.15 && g > b * 1.1) {
+            const strength = Math.min(1, (g - Math.max(r, b)) / 90);
+            data[i + 3] = Math.round(255 * (1 - strength));
+          }
+        }
+
+        ctx.putImageData(frame, 0, 0);
+      }
+      requestAnimationFrame(drawFrame);
+    }
+
     video.play().catch(() => {});
+    drawFrame();
 
     async function enableSound() {
       video.muted = false;
       video.volume = 1;
-
       try {
         await video.play();
         if (prompt) prompt.classList.add("hidden");
-      } catch (err) {
-        // Keep the prompt visible if the browser refuses audio.
-      }
+      } catch (e) {}
     }
 
-    if (prompt) {
-      prompt.addEventListener("click", enableSound);
-    }
+    if (prompt) prompt.addEventListener("click", enableSound);
 
-    // Also allow the first interaction anywhere to enable audio.
     document.addEventListener("click", (event) => {
-      if (event.target === prompt) return;
-      if (!video.muted) return;
-      enableSound();
+      if (event.target !== prompt && video.muted) enableSound();
     }, { once: true });
 
     document.addEventListener("touchstart", () => {
