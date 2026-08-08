@@ -151,6 +151,34 @@
     pointer-events: none;
   }
 
+
+  .corner-cat {
+    position: absolute;
+    bottom: 0;
+    width: clamp(95px, 13vw, 175px);
+    height: auto;
+    z-index: 4;
+    pointer-events: none;
+    filter:
+      drop-shadow(0 0 6px #fff)
+      drop-shadow(0 0 18px #ff00e6)
+      drop-shadow(0 0 30px #00ffff);
+  }
+
+  .left-cat { left: 1.5%; }
+  .right-cat {
+    right: 1.5%;
+    transform: scaleX(-1);
+  }
+
+  @media (max-width: 600px) {
+    .corner-cat {
+      width: clamp(70px, 21vw, 115px);
+    }
+    .left-cat { left: 0; }
+    .right-cat { right: 0; }
+  }
+
   .scanlines {
     position: absolute;
     inset: 0;
@@ -237,7 +265,9 @@
   <main class="stage">
     <h1 class="word" data-text="Chutiya Unpaid villain/Ray">Chutiya Unpaid villain/Ray</h1>
     <div class="scanlines"></div>
-  <video id="catVideo" class="spinning-cat" src="spinning-cat.mp4" autoplay muted loop playsinline preload="auto"></video>
+  <img class="corner-cat left-cat" src="cute-cat.gif" alt="">
+    <img class="corner-cat right-cat" src="cute-cat.gif" alt="">
+    <video id="catVideo" class="spinning-cat" src="spinning-cat.mp4" autoplay muted loop playsinline preload="auto"></video>
     </main>
 
 <script>
