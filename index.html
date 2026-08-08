@@ -107,6 +107,28 @@
     animation: rgb 2.8s linear infinite, pulse 1.7s ease-in-out infinite alternate;
   }
 
+  .reveal-button {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    color: #fff;
+  }
+
+  .reveal-button:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 10px;
+  }
+
+  .reveal-button.revealed {
+    cursor: default;
+  }
+
+
   /* Chromatic ghost layers */
   .word::before,
   .word::after {
@@ -246,6 +268,16 @@
       top: calc(50% + 82px);
     }
 
+    .corner-cat {
+      width: clamp(58px, 20vw, 100px);
+      bottom: 6px;
+    }
+
+    .cat-left {
+    left: 14%;
+  }
+    .cat-right { right: 5px; }
+
     .stage::before {
       width: 100vw;
       filter: blur(70px);
@@ -268,24 +300,11 @@
   <img class="corner-cat left-cat" src="cute-cat.gif" alt="">
     <img class="corner-cat right-cat" src="cute-cat.gif" alt="">
     <video id="catVideo" class="spinning-cat" src="spinning-cat.mp4" autoplay muted loop playsinline preload="auto"></video>
-    </main>
+    <img class="corner-cat cat-left" src="cute-cat.gif" alt="Dancing cat">
+    <img class="corner-cat cat-right" src="cute-cat.gif" alt="Dancing cat">
+  </main>
 
-<script>
-  const catVideo = document.getElementById("catVideo");
 
-  function enableSound() {
-    catVideo.muted = false;
-    catVideo.volume = 1;
-    catVideo.play().catch(() => {});
-    document.removeEventListener("click", enableSound);
-    document.removeEventListener("touchstart", enableSound);
-    document.removeEventListener("keydown", enableSound);
-  }
-
-  document.addEventListener("click", enableSound, { once: true });
-  document.addEventListener("touchstart", enableSound, { once: true, passive: true });
-  document.addEventListener("keydown", enableSound, { once: true });
-</script>
 
 </body>
 </html>
