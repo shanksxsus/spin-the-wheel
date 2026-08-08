@@ -201,6 +201,36 @@
     .right-cat { right: 0; }
   }
 
+  #soundPrompt {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + clamp(125px, 13vw, 165px));
+    transform: translateX(-50%);
+    z-index: 8;
+    border: 1px solid rgba(255,255,255,.8);
+    border-radius: 999px;
+    padding: 7px 14px;
+    background: rgba(0,0,0,.7);
+    color: #fff;
+    font: 700 11px/1 Arial, sans-serif;
+    letter-spacing: .16em;
+    cursor: pointer;
+    box-shadow:
+      0 0 8px #fff,
+      0 0 18px #ff00e6,
+      0 0 28px #00ffff;
+    animation: soundPulse 1.4s ease-in-out infinite alternate;
+  }
+
+  #soundPrompt.hidden {
+    display: none;
+  }
+
+  @keyframes soundPulse {
+    from { opacity: .65; }
+    to { opacity: 1; }
+  }
+
   .scanlines {
     position: absolute;
     inset: 0;
@@ -270,7 +300,7 @@
 
     .corner-cat {
       width: clamp(58px, 20vw, 100px);
-      bottom: 6px;
+      bottom: 38px;
     }
 
     .cat-left {
@@ -302,9 +332,50 @@
     <video id="catVideo" class="spinning-cat" src="spinning-cat.mp4" autoplay muted loop playsinline preload="auto"></video>
     <img class="corner-cat cat-left" src="cute-cat.gif" alt="Dancing cat">
     <img class="corner-cat cat-right" src="cute-cat.gif" alt="Dancing cat">
+  <button id="soundPrompt" type="button" aria-label="Enable sound">TAP FOR SOUND</button>
   </main>
 
 
+
+<script>
+  (() => {
+    const video = document.getElementById("catVideo");
+    const prompt = document.getElementById("soundPrompt");
+    if (!video) return;
+
+    // Autoplay is allowed while muted.
+    video.muted = true;
+    video.volume = 1;
+    video.play().catch(() => {});
+
+    async function enableSound() {
+      video.muted = false;
+      video.volume = 1;
+
+      try {
+        await video.play();
+        if (prompt) prompt.classList.add("hidden");
+      } catch (err) {
+        // Keep the prompt visible if the browser refuses audio.
+      }
+    }
+
+    if (prompt) {
+      prompt.addEventListener("click", enableSound);
+    }
+
+    // Also allow the first interaction anywhere to enable audio.
+    document.addEventListener("click", (event) => {
+      if (event.target === prompt) return;
+      if (!video.muted) return;
+      enableSound();
+    }, { once: true });
+
+    document.addEventListener("touchstart", () => {
+      if (video.muted) enableSound();
+    }, { once: true, passive: true });
+  })();
+</script>
 
 </body>
 </html>
