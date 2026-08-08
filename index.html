@@ -237,7 +237,25 @@
   <main class="stage">
     <h1 class="word" data-text="Chutiya Unpaid villain/Ray">Chutiya Unpaid villain/Ray</h1>
     <div class="scanlines"></div>
-  <video class="spinning-cat" src="spinning-cat.mp4" autoplay muted loop playsinline preload="auto"></video>
+  <video id="catVideo" class="spinning-cat" src="spinning-cat.mp4" autoplay muted loop playsinline preload="auto"></video>
     </main>
+
+<script>
+  const catVideo = document.getElementById("catVideo");
+
+  function enableSound() {
+    catVideo.muted = false;
+    catVideo.volume = 1;
+    catVideo.play().catch(() => {});
+    document.removeEventListener("click", enableSound);
+    document.removeEventListener("touchstart", enableSound);
+    document.removeEventListener("keydown", enableSound);
+  }
+
+  document.addEventListener("click", enableSound, { once: true });
+  document.addEventListener("touchstart", enableSound, { once: true, passive: true });
+  document.addEventListener("keydown", enableSound, { once: true });
+</script>
+
 </body>
 </html>
