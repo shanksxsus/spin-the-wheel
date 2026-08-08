@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
 <title>thuperman</title>
 
@@ -22,18 +22,16 @@ body {
 
 body {
     font-family: Arial, Helvetica, sans-serif;
+    -webkit-tap-highlight-color: transparent;
 }
-
-/* =========================
-   MAIN SCREEN
-========================= */
 
 .stage {
     position: relative;
     width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+    height: 100svh;
+    min-height: 100dvh;
 
+    overflow: hidden;
     display: grid;
     place-items: center;
 
@@ -41,9 +39,10 @@ body {
     isolation: isolate;
 }
 
-/* =========================
-   BACKGROUND CAT VIDEO
-========================= */
+
+/* ==============================
+   BACKGROUND VIDEO
+============================== */
 
 #catVideo {
     position: absolute;
@@ -58,7 +57,6 @@ body {
     pointer-events: none;
 }
 
-/* Darken video slightly */
 .video-overlay {
     position: absolute;
     inset: 0;
@@ -68,15 +66,16 @@ body {
     background:
         radial-gradient(
             circle at center,
-            rgba(0, 0, 0, 0.05),
-            rgba(0, 0, 0, 0.55)
+            rgba(0, 0, 0, 0.08),
+            rgba(0, 0, 0, 0.52)
         ),
-        rgba(0, 0, 0, 0.15);
+        rgba(0, 0, 0, 0.12);
 }
 
-/* =========================
+
+/* ==============================
    CONTENT
-========================= */
+============================== */
 
 .content {
     position: relative;
@@ -92,9 +91,10 @@ body {
     padding: 20px;
 }
 
-/* =========================
-   FOUR CORNER CATS
-========================= */
+
+/* ==============================
+   CORNER CATS
+============================== */
 
 .corner-cat {
     position: absolute;
@@ -115,43 +115,39 @@ body {
         drop-shadow(0 0 40px #008cff);
 }
 
-/* Top left */
 .cat-tl {
     top: 7%;
     left: 7%;
 }
 
-/* Top right */
 .cat-tr {
     top: 7%;
     right: 7%;
 }
 
-/* Bottom left */
 .cat-bl {
     bottom: 7%;
     left: 7%;
 }
 
-/* Bottom right */
 .cat-br {
     bottom: 7%;
     right: 7%;
 }
 
-/* =========================
+
+/* ==============================
    MAIN TEXT
-========================= */
+============================== */
 
 .word {
     position: relative;
 
     margin: 0;
 
-    color: white;
+    color: #fff;
 
     font-size: clamp(2rem, 9vw, 8rem);
-
     line-height: 0.9;
 
     font-weight: 900;
@@ -166,7 +162,6 @@ body {
 
     user-select: none;
 
-    /* RGB glow */
     text-shadow:
         0 0 3px #fff,
         0 0 8px #fff,
@@ -188,9 +183,8 @@ body {
         pulse 1.7s ease-in-out infinite alternate;
 }
 
-/* =========================
-   RGB GLITCH LAYERS
-========================= */
+
+/* RGB GLITCH */
 
 .word::before,
 .word::after {
@@ -208,8 +202,6 @@ body {
     opacity: 0.8;
 }
 
-/* RED OFFSET */
-
 .word::before {
     -webkit-text-stroke-color: #ff0055;
 
@@ -219,8 +211,6 @@ body {
 
     animation: red 1.2s steps(2, end) infinite;
 }
-
-/* CYAN OFFSET */
 
 .word::after {
     -webkit-text-stroke-color: #00ffff;
@@ -232,9 +222,54 @@ body {
     animation: cyan 0.9s steps(2, end) infinite;
 }
 
-/* =========================
+
+/* ==============================
+   TAP FOR AUDIO
+============================== */
+
+.audio-hint {
+    position: absolute;
+
+    left: 50%;
+    bottom: 22px;
+
+    transform: translateX(-50%);
+
+    z-index: 20;
+
+    color: rgba(255, 255, 255, 0.78);
+
+    font-size: 12px;
+    font-weight: 600;
+
+    letter-spacing: 2px;
+
+    text-shadow:
+        0 0 5px #fff,
+        0 0 12px #ff00e6,
+        0 0 20px #00ffff;
+
+    white-space: nowrap;
+
+    pointer-events: none;
+
+    animation: audioPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes audioPulse {
+    0%, 100% {
+        opacity: 0.45;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+
+/* ==============================
    SCANLINES
-========================= */
+============================== */
 
 .scanlines {
     position: absolute;
@@ -255,14 +290,14 @@ body {
     mix-blend-mode: screen;
 }
 
-/* =========================
+
+/* ==============================
    ANIMATIONS
-========================= */
+============================== */
 
 @keyframes rgb {
 
-    0%,
-    100% {
+    0%, 100% {
         filter: hue-rotate(0deg);
     }
 
@@ -284,8 +319,7 @@ body {
 
 @keyframes red {
 
-    0%,
-    100% {
+    0%, 100% {
         transform: translate(-5px, 0);
     }
 
@@ -296,8 +330,7 @@ body {
 
 @keyframes cyan {
 
-    0%,
-    100% {
+    0%, 100% {
         transform: translate(5px, 0);
     }
 
@@ -306,9 +339,10 @@ body {
     }
 }
 
-/* =========================
+
+/* ==============================
    MOBILE
-========================= */
+============================== */
 
 @media (max-width: 600px) {
 
@@ -340,16 +374,35 @@ body {
     .word {
         font-size: clamp(1.8rem, 8vw, 5rem);
     }
+
+    .audio-hint {
+        bottom: 16px;
+        font-size: 10px;
+    }
+}
+
+
+/* Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .word,
+    .word::before,
+    .word::after,
+    .audio-hint {
+        animation: none;
+    }
 }
 
 </style>
 </head>
 
+
 <body>
 
 <main class="stage">
 
-    <!-- FULL SCREEN CAT VIDEO -->
+    <!-- FULLSCREEN CAT VIDEO -->
     <video
         id="catVideo"
         src="spinning-cat.mp4"
@@ -360,38 +413,43 @@ body {
         preload="auto">
     </video>
 
-    <!-- DARK OVERLAY -->
+
+    <!-- VIDEO DARK OVERLAY -->
     <div class="video-overlay"></div>
 
 
     <!-- MAIN CONTENT -->
     <section class="content">
 
-        <!-- FOUR CATS -->
-
+        <!-- TOP LEFT -->
         <img
             class="corner-cat cat-tl"
             src="cute-cat.gif"
-            alt="Cat">
+            alt="Dancing cat">
 
+
+        <!-- TOP RIGHT -->
         <img
             class="corner-cat cat-tr"
             src="cute-cat.gif"
-            alt="Cat">
+            alt="Dancing cat">
 
+
+        <!-- BOTTOM LEFT -->
         <img
             class="corner-cat cat-bl"
             src="cute-cat.gif"
-            alt="Cat">
+            alt="Dancing cat">
 
+
+        <!-- BOTTOM RIGHT -->
         <img
             class="corner-cat cat-br"
             src="cute-cat.gif"
-            alt="Cat">
+            alt="Dancing cat">
 
 
         <!-- MAIN TEXT -->
-
         <h1
             class="word"
             data-text="Chutiya Unpaid villain/Ray">
@@ -401,10 +459,83 @@ body {
     </section>
 
 
+    <!-- AUDIO MESSAGE -->
+    <div class="audio-hint">
+        tap for audio
+    </div>
+
+
     <!-- CRT SCANLINES -->
     <div class="scanlines"></div>
 
 </main>
+
+
+<script>
+
+const video = document.getElementById("catVideo");
+const audioHint = document.querySelector(".audio-hint");
+
+
+// Start muted because browsers block
+// autoplay with sound
+video.muted = true;
+video.volume = 1;
+
+video.play().catch(() => {});
+
+
+/* ==============================
+   ENABLE AUDIO
+============================== */
+
+async function turnSoundOn() {
+
+    video.muted = false;
+    video.volume = 1;
+
+    try {
+
+        await video.play();
+
+        audioHint.textContent = "audio on";
+
+        audioHint.style.transition = "opacity 0.4s ease";
+        audioHint.style.opacity = "0";
+
+        setTimeout(() => {
+            audioHint.style.display = "none";
+        }, 450);
+
+    } catch (error) {
+
+        video.muted = true;
+
+    }
+}
+
+
+/* Click anywhere */
+
+document.addEventListener(
+    "click",
+    turnSoundOn,
+    { once: true }
+);
+
+
+/* Touch anywhere */
+
+document.addEventListener(
+    "touchstart",
+    turnSoundOn,
+    {
+        once: true,
+        passive: true
+    }
+);
+
+</script>
 
 </body>
 </html>
