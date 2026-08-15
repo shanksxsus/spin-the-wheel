@@ -182,23 +182,27 @@ form.inputline .ps{ flex-shrink:0; }
 }
 
 .help-row{
-  display:grid;
-  grid-template-columns: 150px minmax(0,1fr);
-  column-gap: 18px;
+  display:flex;
   align-items:baseline;
-  margin: 0 0 4px;
+  margin:0 0 4px;
+  width:100%;
+  min-width:0;
 }
 .help-row .help-cmd{
-  color: var(--green);
-  white-space: nowrap;
+  color:var(--green);
+  width:170px;
+  flex:0 0 170px;
+  white-space:nowrap;
 }
 .help-row .help-desc{
-  color: var(--muted);
+  color:var(--muted);
+  white-space:nowrap;
+  min-width:0;
 }
 @media (max-width: 640px){
-  .help-row{
-    grid-template-columns: 125px minmax(0,1fr);
-    column-gap: 12px;
+  .help-row .help-cmd{
+    width:125px;
+    flex-basis:125px;
   }
 }
 
@@ -493,12 +497,12 @@ window.RESUME = {
     if(lower === ''){
       // nothing to do
     } else if(lower === 'help' || lower === '?'){
-      const wrap = el('div','output');
+      const wrap = el('div','output help-list');
       wrap.appendChild(el('div', null, 'available commands:'));
       HELP_ROWS.forEach(([k,v])=>{
-        wrap.appendChild(el('div','help-row',
-          `<span class="help-cmd">${k}</span><span class="help-desc">${v}</span>`
-        ));
+        const row = el('div','help-row');
+        row.innerHTML = `<span class="help-cmd">${k}</span><span class="help-desc">${v}</span>`;
+        wrap.appendChild(row);
       });
       content.appendChild(wrap);
     } else if(lower === 'whoami'){
