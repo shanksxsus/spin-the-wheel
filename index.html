@@ -327,7 +327,49 @@ window.RESUME = {
     });
     content.appendChild(wrap);
   }
+  
+//neofetch fix yoo
+  
+  function printNeofetch(){
+  const wrap = el('div', 'neofetch-output');
 
+  wrap.innerHTML = `
+    <pre class="ascii">  __  __              __  __
+ / /_/ /  __ ______  / / / /__  ______ _  ___ ____
+/ __/ _ \/ // / __ \/ /_/ / -_)/ __/  ' \/ _ \`/ _ \
+\__/_//_/\_,_/ .__/\____/\__//_/ /_/_/_/\_,_/_//_/
+            /_/</pre>
+
+    <div class="info">
+      <span class="icon">🐧</span><span class="label">OS</span>
+      <span class="colon">:</span><span class="value">Garuda Linux x86_64</span>
+
+      <span class="icon">❯_</span><span class="label">Shell</span>
+      <span class="colon">:</span><span class="value">bash 5.2.26</span>
+
+      <span class="icon">❯_</span><span class="label">Terminal</span>
+      <span class="colon">:</span><span class="value">kitty</span>
+
+      <span class="icon">⏱</span><span class="label">Uptime</span>
+      <span class="colon">:</span><span class="value">${fmtUptime()}</span>
+
+      <span class="icon">📦</span><span class="label">Packages</span>
+      <span class="colon">:</span><span class="value">1423 (pacman)</span>
+
+      <span class="icon">◇◇</span><span class="label">Status</span>
+      <span class="colon">:</span><span class="value">
+        <span class="status-dot"></span>ready
+      </span>
+    </div>
+
+    <hr class="rule">
+  `;
+
+  content.appendChild(wrap);
+}
+
+  
+  
   function runCommand(raw){
     const cmd = raw.trim();
     printPromptEcho(raw);
@@ -373,7 +415,7 @@ window.RESUME = {
     } else if(lower === 'resume' || lower === 'cat resume.pdf'){
       printOutput(`${RESUME.message} <a class="link" href="${RESUME.url}" target="_blank" rel="noopener">${RESUME.url}</a>`);
     } else if(lower === 'neofetch'){
-      printOutput('redrawing banner above ↑ &mdash; scroll up to see it.');
+      printNeofetch();
       screen.scrollTop = 0;
     } else if(lower === 'clear' || lower === 'cls'){
       content.innerHTML = '';
