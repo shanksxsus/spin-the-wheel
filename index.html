@@ -180,6 +180,28 @@ form.inputline .ps{ flex-shrink:0; }
 #cmdInput.sudo-password{
   caret-color: var(--green);
 }
+
+.help-row{
+  display:grid;
+  grid-template-columns: 150px minmax(0,1fr);
+  column-gap: 18px;
+  align-items:baseline;
+  margin: 0 0 4px;
+}
+.help-row .help-cmd{
+  color: var(--green);
+  white-space: nowrap;
+}
+.help-row .help-desc{
+  color: var(--muted);
+}
+@media (max-width: 640px){
+  .help-row{
+    grid-template-columns: 125px minmax(0,1fr);
+    column-gap: 12px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -290,7 +312,7 @@ window.RESUME = {
     ['skills',        'tech stack &amp; tools'],
     ['stack',         'show my stack at a glance'],
     ['projects',      'things I\'ve built'],
-    ['project <name>', '      show details for one project'],
+    ['project <name>', 'show details for one project'],
     ['experience',    'work &amp; development experience'],
     ['education',     'education background'],
     ['contact',       'ways to reach me'],
@@ -301,11 +323,11 @@ window.RESUME = {
     ['pwd',           'print working directory'],
     ['ls',            'list directory contents'],
     ['ls -la',        'list directory contents with details'],
-    ['cd <dir>',      '     change directory'],
-    ['cat <file>',    '      read a file'],
+    ['cd <dir>',      'change directory'],
+    ['cat <file>',    'read a file'],
     ['tree',          'show the portfolio directory tree'],
-    ['which <cmd>',   '     show where a command lives'],
-    ['man <cmd>',     '     show a command manual'],
+    ['which <cmd>',   'show where a command lives'],
+    ['man <cmd>',     'show a command manual'],
     ['env',           'show environment variables'],
     ['hostname',      'print hostname'],
     ['uname -r',      'print kernel release'],
@@ -319,7 +341,7 @@ window.RESUME = {
     ['neofetch',      'redraw the system banner'],
     ['history',       'show command history'],
     ['date',          'print current date/time'],
-    ['echo <text>',   '      print text'],
+    ['echo <text>',   'print text'],
     ['clear',         'clear the screen'],
     ['reboot',        'restart the terminal'],
     ['sudo [cmd]',    'try it and see'],
@@ -474,7 +496,9 @@ window.RESUME = {
       const wrap = el('div','output');
       wrap.appendChild(el('div', null, 'available commands:'));
       HELP_ROWS.forEach(([k,v])=>{
-        wrap.appendChild(el('div', null, `&nbsp;&nbsp;<span class="accent">${k.padEnd(14,' ').replace(/ /g,'&nbsp;')}</span> <span class="muted">${v}</span>`));
+        wrap.appendChild(el('div','help-row',
+          `<span class="help-cmd">${k}</span><span class="help-desc">${v}</span>`
+        ));
       });
       content.appendChild(wrap);
     } else if(lower === 'whoami'){
