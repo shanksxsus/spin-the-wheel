@@ -5,17 +5,13 @@
   const form    = document.getElementById('inputForm');
 
   // ---- live uptime counter, ticking every second from the neofetch snapshot ----
-  const startMs = Date.now() - ((1*60+23)*60*1000);
+  const startMs = Date.now();
   function fmtUptime(){
     const diffSec = Math.floor((Date.now() - startMs) / 1000);
     const h = Math.floor(diffSec / 3600);
     const m = Math.floor((diffSec % 3600) / 60);
     const s = diffSec % 60;
-    const parts = [];
-    if(h > 0) parts.push(`${h} hour${h!==1?'s':''}`);
-    parts.push(`${m} min${m!==1?'s':''}`);
-    parts.push(`${String(s).padStart(2,'0')} secs`);
-    return parts.join(', ');
+    return `${h} hour${h!==1?'s':''}, ${m} min${m!==1?'s':''}, ${String(s).padStart(2,'0')} secs`;
   }
   setInterval(()=>{
     // re-query each tick so this keeps working even after "clear" removes/rebuilds content
@@ -162,6 +158,7 @@
     runCommand(val);
     screen.appendChild(form);
     scrollDown();
+    input.focus();
   });
 
   input.addEventListener('keydown', (e)=>{
