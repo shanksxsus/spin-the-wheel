@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>thuperman@portfolio</title>
+<style>
+:root{
+  --bg: #0b0e10;
+  --window-border: #1c2226;
+  --green: #4fe36b;
+  --green-dim: #2f8f45;
+  --blue: #5aa8f0;
+  --text: #d7dde1;
+  --muted: #6b7680;
+  --divider: #23292d;
+  --font: "Fira Code","JetBrains Mono","Cascadia Code","Consolas",monospace;
+}
+
+*{ box-sizing: border-box; }
+
+html,body{
+  height:100%;
+  margin:0;
+  background:
+    radial-gradient(circle at 20% 10%, #10151a 0%, #05070a 55%, #020304 100%);
+  font-family: var(--font);
+  color: var(--text);
+}
+
+.terminal{
+  width:100vw;
+  height:100vh;
+  background: var(--bg);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+.titlebar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding: 10px 14px;
+  background: #0e1215;
+  border-bottom: 1px solid var(--window-border);
+}
+.dot{ width:11px; height:11px; border-radius:50%; }
+.dot.red{ background:#ff5f56; }
+.dot.yellow{ background:#ffbd2e; }
+.dot.green{ background:#27c93f; }
+.title-label{
+  margin: 0 auto;
+  transform: translateX(-18px);
+  font-size: 12.5px;
+  color: var(--muted);
+  letter-spacing: .3px;
+}
+
+.screen{
+  padding: 22px 26px 26px;
+  font-size: 14.5px;
+  line-height: 1.65;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  cursor: text;
+}
+.screen::-webkit-scrollbar{ width:10px; }
+.screen::-webkit-scrollbar-thumb{ background:#1d2327; border-radius: 10px; }
+.screen::-webkit-scrollbar-track{ background: transparent; }
+
+.prompt-line{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.ps{ color: var(--green); font-weight: 600; }
+.ps .path{ color: var(--green); }
+.cmd{ color: #eef1f3; }
+
+.cursor-block{
+  display:inline-block;
+  width: 8px;
+  height: 17px;
+  background: var(--green);
+  vertical-align: -3px;
+  animation: blink 1.05s steps(1) infinite;
+}
+@keyframes blink{ 50%{ opacity: 0; } }
+
+.ascii{
+  color: var(--green);
+  font-size: 12px;
+  line-height: 1.15;
+  margin: 14px 0 18px;
+  white-space: pre;
+  text-shadow: 0 0 8px rgba(79,227,107,0.25);
+  overflow-x:auto;
+}
+
+.info{
+  display:grid;
+  grid-template-columns: 20px max-content 14px 1fr;
+  align-items: baseline;
+  row-gap: 8px;
+  column-gap: 10px;
+  margin-bottom: 18px;
+}
+.info .icon{ color: var(--blue); text-align:center; }
+.info .label{ color: var(--blue); }
+.info .colon{ color: var(--muted); }
+.info .value{ color: var(--text); }
+.status-dot{
+  display:inline-block;
+  width:8px; height:8px;
+  border-radius:50%;
+  background: var(--green);
+  margin-right:7px;
+  box-shadow: 0 0 6px var(--green);
+}
+
+.rule{
+  border: none;
+  border-top: 1px solid var(--divider);
+  margin: 16px 0 18px;
+}
+
+.output{ margin: 2px 0 14px; color: var(--text); }
+.output .folder{ color: var(--blue); }
+.folders{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, max-content));
+  column-gap: 34px;
+  row-gap: 6px;
+  margin: 2px 0 14px;
+}
+
+.muted{ color: var(--muted); }
+.accent{ color: var(--green); }
+.err{ color: #ff6b6b; }
+.link{ color: var(--blue); text-decoration: underline; text-decoration-color: rgba(90,168,240,0.35); }
+
+form.inputline{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top: 4px;
+}
+form.inputline .ps{ flex-shrink:0; }
+#cmdInput{
+  flex:1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #eef1f3;
+  font-family: var(--font);
+  font-size: 14.5px;
+  caret-color: var(--green);
+}
+
+@media (max-width: 640px){
+  .ascii{ font-size: 8px; }
+  .screen{ padding: 16px; font-size: 13px; }
+}
+
+.neofetch-output{
+  max-width:100%;
+  overflow:hidden;
+}
+.neofetch-output .ascii{
+  width:max-content;
+  max-width:100%;
+}
+#cmdInput.sudo-password{
+  caret-color: var(--green);
+}
+</style>
+</head>
+<body>
+
+<div class="terminal">
+  <div class="titlebar">
+    <span class="dot red"></span>
+    <span class="dot yellow"></span>
+    <span class="dot green"></span>
+    <span class="title-label">thuperman@portfolio: ~</span>
+  </div>
+
+  <div class="screen" id="screen">
+   <div id="content">
+    <pre class="ascii">  __  __              __  __                          
+ / /_/ /  __ ______  / / / /__  ______ _  ___ ____
+/ __/ _ \/ // / __ \/ /_/ / -_)/ __/  ' \/ _ `/ _ \
+\__/_//_/\_,_/ .__/\____/\__//_/ /_/_/_/\_,_/_//_/
+            /_/                                     </pre>
+
+    <div class="info">
+      <span class="icon">🐧</span><span class="label">OS</span><span class="colon">:</span><span class="value">Cow Linux x86_64</span>
+      <span class="icon">❯_</span><span class="label">Shell</span><span class="colon">:</span><span class="value">bash 5.2.23</span>
+      <span class="icon">❯_</span><span class="label">Terminal</span><span class="colon">:</span><span class="value">thuper</span>
+      <span class="icon">⏱</span><span class="label">Uptime</span><span class="colon">:</span><span class="value" id="uptimeVal">0 hours, 0 mins, 00 secs</span>
+      <span class="icon">📦</span><span class="label">Packages</span><span class="colon">:</span><span class="value">1423 (pacman)</span>
+      <span class="icon">◇◇</span><span class="label">Status</span><span class="colon">:</span><span class="value"><span class="status-dot"></span>ready</span>
+    </div>
+
+    <hr class="rule">
+
+    <div class="output">Welcome to my terminal portfolio. Type <span class="accent">help</span> to see what's available.</div>
+   </div>
+
+    <form class="inputline" id="inputForm" autocomplete="off">
+      <span class="ps">thuperman@portfolio:~$</span>
+      <input type="text" id="cmdInput" spellcheck="false" autocomplete="off" autocapitalize="off" autofocus />
+    </form>
+  </div>
+</div>
+
+<script>
+// About section — edit this text freely, it's plain HTML-ish string content.
+window.ABOUT = `Hi, I'm Thuperman &mdash; a developer who lives half in the terminal, half in the browser.`;
+
+// Skills table — each row is [label, value]. Add/remove rows freely.
+window.SKILLS = [
+  ['Languages', 'JavaScript, TypeScript, Python'],
+  ['Frontend',  'React, Tailwind'],
+  ['Backend',   'Node.js, Express, PostgreSQL'],
+  ['DevOps',    'Docker, Linux, Nginx, GitHub Actions'],
+  ['Tools',     'Neovim, tmux, kitty, git, bash'],
+];
+
+// Projects list — each row is [name, description, link].
+window.PROJECTS = [
+  ['nebula-cli',     'a themeable terminal dashboard for system stats',        'github.com/thuperman/nebula-cli'],
+  ['portfolio-term', 'this very site &mdash; a fake terminal, very real bugs', 'github.com/thuperman/portfolio-term'],
+  ['dotshelf',       'a dotfiles manager with atomic rollbacks',               'github.com/thuperman/dotshelf'],
+];
+
+// Contact details — each row is [label, value].
+window.CONTACT = [
+  ['email',    'hello@thuperman.com'],
+  ['github',   'github.com/shanksxsus'],
+  ['twitter',  '@shanksxsus'],
+  ['discord', 'shanksxsus']
+];
+
+// Resume link — drop your real resume.pdf next to index.html and update the url if needed.
+window.RESUME = {
+  message: 'opening resume.pdf ...',
+  url: 'resume.pdf',
+};
+
+
+(function(){
+  const screen  = document.getElementById('screen');
+  const content = document.getElementById('content');
+  const input   = document.getElementById('cmdInput');
+  const form    = document.getElementById('inputForm');
+
+  // ---- live uptime counter, ticking every second from the neofetch snapshot ----
+  const startMs = Date.now();
+  function fmtUptime(){
+    const diffSec = Math.floor((Date.now() - startMs) / 1000);
+    const h = Math.floor(diffSec / 3600);
+    const m = Math.floor((diffSec % 3600) / 60);
+    const s = diffSec % 60;
+    return `${h} hour${h!==1?'s':''}, ${m} min${m!==1?'s':''}, ${String(s).padStart(2,'0')} secs`;
+  }
+  setInterval(()=>{
+    // re-query each tick so this keeps working even after "clear" removes/rebuilds content
+    const el = document.getElementById('uptimeVal');
+    if(el) el.textContent = fmtUptime();
+  }, 1000);
+
+  const cmdLog = [];
+  let cmdPos = -1;
+
+  // ABOUT, SKILLS, PROJECTS, CONTACT, RESUME are loaded from data/*.js (see index.html)
+  const FOLDERS = ['about.txt','skills.txt','projects/','contact.txt','resume.pdf'];
+
+  const HELP_ROWS = [
+    ['help',          'show this list of commands'],
+    ['about',         'a little about me'],
+    ['skills',        'tech stack &amp; tools'],
+    ['stack',         'show my stack at a glance'],
+    ['projects',      'things I\'ve built'],
+    ['project <name>', 'show details for one project'],
+    ['experience',    'work &amp; development experience'],
+    ['education',     'education background'],
+    ['contact',       'ways to reach me'],
+    ['socials',       'social links'],
+    ['resume',        'open / download my resume'],
+    ['whoami',        'print current user'],
+    ['who',           'show logged-in user'],
+    ['pwd',           'print working directory'],
+    ['ls',            'list directory contents'],
+    ['ls -la',        'list directory contents with details'],
+    ['cd <dir>',      'change directory'],
+    ['cat <file>',    'read a file'],
+    ['tree',          'show the portfolio directory tree'],
+    ['which <cmd>',   'show where a command lives'],
+    ['man <cmd>',     'show a command manual'],
+    ['env',           'show environment variables'],
+    ['hostname',      'print hostname'],
+    ['uname -r',      'print kernel release'],
+    ['uptime',        'show site uptime'],
+    ['stats',         'show portfolio stats'],
+    ['status',        'show current system status'],
+    ['df -h',         'show disk usage'],
+    ['free -h',       'show memory usage'],
+    ['ps',            'show running processes'],
+    ['top',           'show a tiny process monitor'],
+    ['neofetch',      'redraw the system banner'],
+    ['history',       'show command history'],
+    ['date',          'print current date/time'],
+    ['echo <text>',   'print text'],
+    ['clear',         'clear the screen'],
+    ['sudo [cmd]',    'try it and see'],
+  ];
+
+  function el(tag, cls, html){
+    const e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(html !== undefined) e.innerHTML = html;
+    return e;
+  }
+
+  function scrollDown(){
+    screen.scrollTop = screen.scrollHeight;
+  }
+
+  let currentDir = '~';
+  let awaitingSudoPassword = false;
+
+  function promptText(){
+    return `thuperman@portfolio:${currentDir}$`;
+  }
+
+  function printPromptEcho(text){
+    const line = el('div','prompt-line');
+    line.innerHTML = `<span class="ps"></span><span class="cmd"></span>`;
+    line.querySelector('.ps').textContent = promptText();
+    line.querySelector('.cmd').textContent = text;
+    content.appendChild(line);
+  }
+
+  function printOutput(html, cls){
+    const out = el('div', 'output' + (cls ? ' ' + cls : ''), html);
+    content.appendChild(out);
+  }
+
+  function printFolders(items){
+    const wrap = el('div','folders');
+    items.forEach(name=>{
+      const s = el('span','folder',name);
+      wrap.appendChild(s);
+    });
+    content.appendChild(wrap);
+  }
+
+  function printTable(rows){
+    const wrap = el('div','output');
+    rows.forEach(([k,v])=>{
+      const row = el('div', null, `<span class="accent">${k.padEnd(12,' ').replace(/ /g,'&nbsp;')}</span> ${v}`);
+      wrap.appendChild(row);
+    });
+    content.appendChild(wrap);
+  }
+  
+//neofetch fix yoo
+
+  const DIRS = {
+    '~': ['about.txt','skills.txt','projects/','experience.txt','education.txt','contact.txt','socials.txt','resume.pdf'],
+    '~/projects': ['nebula-cli/','portfolio-term/','dotshelf/']
+  };
+
+  const FILES = {
+    'about.txt': ABOUT,
+    'skills.txt': SKILLS.map(([k,v]) => `${k}: ${v}`).join('\n'),
+    'experience.txt': 'Full-stack development, Linux tinkering, self-hosted infrastructure, and terminal UI work.',
+    'education.txt': 'B.Tech — Artificial Intelligence & Data Science',
+    'contact.txt': CONTACT.map(([k,v]) => `${k}: ${v}`).join('\n'),
+    'socials.txt': 'github: github.com/shanksxsus\ntwitter: @shanksxsus\ndiscord: shanksxsus',
+    'resume.pdf': 'Binary file — use the resume command to open it.'
+  };
+
+  const PROJECT_DETAILS = {
+    'nebula-cli': 'Themeable terminal dashboard for system stats.',
+    'portfolio-term': 'This terminal portfolio — a fake terminal with very real bugs.',
+    'dotshelf': 'Dotfiles manager with atomic rollbacks.'
+  };
+
+  const MANUALS = {
+    help: 'help — show all available commands.',
+    ls: 'ls [-la] — list the current directory.',
+    cd: 'cd <dir> — move between ~ and ~/projects.',
+    cat: 'cat <file> — print a portfolio file.',
+    tree: 'tree — display the fake portfolio filesystem.',
+    project: 'project <name> — show details for a project.',
+    neofetch: 'neofetch — redraw the system information banner.',
+    stats: 'stats — show portfolio/project statistics.',
+    uptime: 'uptime — show how long this page has been open.'
+  };
+
+  function printTree(){
+    printOutput(`
+      <span class="folder">.</span>
+      ├── <span class="folder">about.txt</span>
+      ├── <span class="folder">skills.txt</span>
+      ├── <span class="folder">experience.txt</span>
+      ├── <span class="folder">education.txt</span>
+      ├── <span class="folder">contact.txt</span>
+      ├── <span class="folder">socials.txt</span>
+      ├── <span class="folder">resume.pdf</span>
+      └── <span class="folder">projects/</span>
+          ├── <span class="folder">nebula-cli/</span>
+          ├── <span class="folder">portfolio-term/</span>
+          └── <span class="folder">dotshelf/</span>
+    `);
+  }
+
+  function printNeofetch(){
+    const wrap = el('div', 'neofetch-output');
+    wrap.innerHTML = `
+      <pre class="ascii">  __  __              __  __
+ / /_/ /  __ ______  / / / /__  ______ _  ___ ____
+/ __/ _ \/ // / __ \/ /_/ / -_)/ __/  ' \/ _ \`/ _ \
+\__/_//_/\_,_/ .__/\____/\__//_/ /_/_/_/\_,_/_//_/
+            /_/</pre>
+
+      <div class="info">
+        <span class="icon">🐧</span><span class="label">OS</span><span class="colon">:</span><span class="value">Cow Linux x86_64</span>
+        <span class="icon">❯_</span><span class="label">Shell</span><span class="colon">:</span><span class="value">bash 5.2.23</span>
+        <span class="icon">❯_</span><span class="label">Terminal</span><span class="colon">:</span><span class="value">thuper</span>
+        <span class="icon">⏱</span><span class="label">Uptime</span><span class="colon">:</span><span class="value">${fmtUptime()}</span>
+        <span class="icon">📦</span><span class="label">Packages</span><span class="colon">:</span><span class="value">1423 (pacman)</span>
+        <span class="icon">◇◇</span><span class="label">Status</span><span class="colon">:</span><span class="value"><span class="status-dot"></span>ready</span>
+      </div>
+      <hr class="rule">
+    `;
+    content.appendChild(wrap);
+  }
+
+
+  function runCommand(raw){
+    const cmd = raw.trim();
+
+    if(awaitingSudoPassword){
+      awaitingSudoPassword = false;
+      printPromptEcho('••••••••');
+      printOutput('Sorry, try again. Incorrect password.', 'err');
+      return;
+    }
+
+    printPromptEcho(raw);
+    if(cmd.length){
+      cmdLog.push(raw);
+    }
+    cmdPos = cmdLog.length;
+
+    const lower = cmd.toLowerCase();
+
+    if(lower === ''){
+      // nothing to do
+    } else if(lower === 'help' || lower === '?'){
+      const wrap = el('div','output');
+      wrap.appendChild(el('div', null, 'available commands:'));
+      HELP_ROWS.forEach(([k,v])=>{
+        wrap.appendChild(el('div', null, `&nbsp;&nbsp;<span class="accent">${k.padEnd(14,' ').replace(/ /g,'&nbsp;')}</span> <span class="muted">${v}</span>`));
+      });
+      content.appendChild(wrap);
+    } else if(lower === 'whoami'){
+      printOutput('thuperman &mdash; full-stack developer &amp; digital tinkerer');
+    } else if(lower === 'who'){
+      printOutput('thuperman  pts/0  portfolio');
+    } else if(lower === 'pwd'){
+      printOutput(currentDir === '~' ? '/home/thuperman' : '/home/thuperman/projects');
+    } else if(lower === 'ls' || lower === 'ls -la' || lower === 'ls -l'){
+      printFolders(DIRS[currentDir] || DIRS['~']);
+    } else if(lower === 'tree'){
+      printTree();
+    } else if(lower.startsWith('cd')){
+      const target = cmd.slice(2).trim() || '~';
+      if(target === '~' || target === '/home/thuperman'){
+        currentDir = '~';
+        printOutput('');
+      } else if(target === 'projects' || target === '~/projects' || target === '/home/thuperman/projects'){
+        currentDir = '~/projects';
+        printOutput('');
+      } else if(target === '..' && currentDir === '~/projects'){
+        currentDir = '~';
+        printOutput('');
+      } else {
+        printOutput(`bash: cd: ${target}: No such directory`, 'err');
+      }
+    } else if(lower === 'uname -r'){
+      printOutput('6.8.9-zen1-1-zen');
+    } else if(lower === 'uname' || lower === 'uname -a'){
+      printOutput('Linux portfolio 6.8.9-zen1-1-zen #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux');
+    } else if(lower === 'about' || lower === 'cat about.txt'){
+      printOutput(ABOUT.replace(/\n/g,'<br>'));
+    } else if(lower === 'skills' || lower === 'cat skills.txt'){
+      printTable(SKILLS);
+    } else if(lower === 'stack'){
+      printTable([
+        ['Languages', 'JavaScript, TypeScript, Python'],
+        ['Frontend', 'React, Tailwind'],
+        ['Backend', 'Node.js, Express, PostgreSQL'],
+        ['DevOps', 'Docker, Linux, Nginx, GitHub Actions']
+      ]);
+    } else if(lower === 'projects' || lower === 'ls projects'){
+      const wrap = el('div','output');
+      PROJECTS.forEach(([name, desc, link])=>{
+        wrap.appendChild(el('div', null,
+          `<span class="folder">${name}</span> &mdash; ${desc}<br>&nbsp;&nbsp;<span class="link">${link}</span>`));
+      });
+      content.appendChild(wrap);
+    } else if(lower.startsWith('project ')){
+      const name = cmd.slice(8).trim().toLowerCase();
+      if(PROJECT_DETAILS[name]){
+        printOutput(`<span class="folder">${name}</span><br>${PROJECT_DETAILS[name]}`);
+      } else {
+        printOutput(`project not found: ${name}. Try <span class="accent">projects</span>.`, 'err');
+      }
+    } else if(lower === 'experience' || lower === 'cat experience.txt'){
+      printOutput(FILES['experience.txt']);
+    } else if(lower === 'education' || lower === 'cat education.txt'){
+      printOutput(FILES['education.txt']);
+    } else if(lower === 'contact' || lower === 'cat contact.txt'){
+      printTable(CONTACT);
+    } else if(lower === 'socials' || lower === 'cat socials.txt'){
+      printOutput(FILES['socials.txt'].replace(/\n/g,'<br>'));
+    } else if(lower === 'resume' || lower === 'cat resume.pdf'){
+      printOutput(`${RESUME.message} <a class="link" href="${RESUME.url}" target="_blank" rel="noopener">${RESUME.url}</a>`);
+    } else if(lower.startsWith('cat ')){
+      const file = cmd.slice(4).trim().replace(/^\.\/+/, '');
+      if(FILES[file]){
+        printOutput(FILES[file].replace(/\n/g,'<br>'));
+      } else {
+        printOutput(`cat: ${file}: No such file or directory`, 'err');
+      }
+    } else if(lower === 'stats'){
+      printTable([
+        ['Projects', String(PROJECTS.length)],
+        ['Languages', '3'],
+        ['Frontend', 'React + Tailwind'],
+        ['Backend', 'Node.js + Express'],
+        ['OS', 'Cow Linux x86_64']
+      ]);
+    } else if(lower === 'status'){
+      printOutput('<span class="status-dot"></span><span class="accent">ready</span> — portfolio systems operational');
+    } else if(lower === 'uptime'){
+      printOutput(`up ${fmtUptime()}`);
+    } else if(lower === 'hostname'){
+      printOutput('portfolio');
+    } else if(lower === 'env'){
+      printOutput('USER=thuperman<br>HOME=/home/thuperman<br>SHELL=/bin/bash<br>TERM=thuper<br>EDITOR=nvim');
+    } else if(lower.startsWith('which ')){
+      const target = cmd.slice(6).trim().split(/\s+/)[0];
+      const known = ['help','about','skills','stack','projects','project','contact','socials','resume','whoami','who','pwd','ls','cd','cat','tree','which','man','env','hostname','uname','uptime','stats','status','df','free','ps','top','neofetch','history','date','echo','clear','sudo'];
+      if(known.includes(target)) printOutput(`/usr/bin/${target}`);
+      else printOutput(`${target}: not found`, 'err');
+    } else if(lower.startsWith('man ')){
+      const target = cmd.slice(4).trim().toLowerCase();
+      if(MANUALS[target]) printOutput(`<span class="accent">${target}</span><br>${MANUALS[target]}`);
+      else printOutput(`No manual entry for ${target}`, 'err');
+    } else if(lower === 'df -h'){
+      printOutput('Filesystem      Size  Used  Avail  Use%  Mounted on<br>/dev/nvme0n1p2   477G  218G  259G   46%  /');
+    } else if(lower === 'free -h'){
+      printOutput('               total        used        free<br>Mem:           15.5Gi       6.2Gi       9.3Gi');
+    } else if(lower === 'ps'){
+      printOutput('PID   TTY   TIME     CMD<br>101   pts/0  00:00    portfolio<br>212   pts/0  00:00    terminal-ui<br>313   pts/0  00:00    uptime-daemon');
+    } else if(lower === 'top'){
+      printOutput('PID   CPU   MEM   COMMAND<br>212   1.2%  2.4%  terminal-ui<br>313   0.1%  0.3%  uptime-daemon<br>101   0.0%  1.1%  portfolio');
+    } else if(lower === 'neofetch'){
+      printNeofetch();
+    } else if(lower === 'clear' || lower === 'cls'){
+      content.innerHTML = '';
+    } else if(lower.startsWith('sudo')){
+      awaitingSudoPassword = true;
+      printOutput('[sudo] password for thuperman:');
+
+    } else if(lower.startsWith('echo ')){
+      const text = cmd.slice(5);
+      printOutput(text.replace(/</g,'&lt;'));
+    } else if(lower === 'date'){
+      printOutput(new Date().toString());
+    } else if(lower === 'history'){
+      const wrap = el('div','output');
+      cmdLog.forEach((c,i)=> wrap.appendChild(el('div', null, `${i+1}  ${c}`)));
+      content.appendChild(wrap);
+    } else if(lower === 'exit'){
+      printOutput('logout<br><span class="muted">(nice try &mdash; this terminal doesn\'t actually close)</span>');
+    } else {
+      printOutput(`command not found: ${cmd.split(' ')[0]}. type <span class="accent">help</span> to see what's available.`, 'err');
+    }
+
+    scrollDown();
+  }
+
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const val = input.value;
+    input.value = '';
+    runCommand(val);
+    input.type = awaitingSudoPassword ? 'password' : 'text';
+    input.classList.toggle('sudo-password', awaitingSudoPassword);
+    screen.appendChild(form);
+    scrollDown();
+    input.focus();
+  });
+
+  input.addEventListener('keydown', (e)=>{
+    if(e.key === 'ArrowUp'){
+      e.preventDefault();
+      if(cmdLog.length === 0) return;
+      cmdPos = Math.max(0, cmdPos - 1);
+      input.value = cmdLog[cmdPos] || '';
+    } else if(e.key === 'ArrowDown'){
+      e.preventDefault();
+      if(cmdLog.length === 0) return;
+      cmdPos = Math.min(cmdLog.length, cmdPos + 1);
+      input.value = cmdLog[cmdPos] || '';
+    } else if(e.key === 'Tab'){
+      e.preventDefault();
+      const partial = input.value.toLowerCase();
+      const options = ['help','about','skills','stack','projects','project','experience','education','contact','socials','resume','whoami','who','pwd','ls','cd','cat','tree','which','man','env','hostname','uname -r','uptime','stats','status','df -h','free -h','ps','top','neofetch','date','echo','clear','history','sudo'];
+      const match = options.find(o => o.startsWith(partial));
+      if(match) input.value = match;
+    }
+  });
+
+  // clicking anywhere in the screen focuses the live input
+  screen.addEventListener('click', ()=> input.focus());
+  window.addEventListener('load', ()=> input.focus());
+})();
+
+</script>
+</body>
+</html>
