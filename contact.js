@@ -1,5 +1,5 @@
 // Contact details — each row is [label, value].
-const CONTACT = [
+window.CONTACT = [
   ['email',    'hello@thuperman.dev'],
   ['github',   'github.com/thuperman'],
   ['linkedin', 'linkedin.com/in/thuperman'],

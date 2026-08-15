@@ -106,7 +106,7 @@
       });
       content.appendChild(wrap);
     } else if(lower === 'whoami'){
-      printOutput('thuperman &mdash; dev &amp; cow?');
+      printOutput('thuperman &mdash; full-stack developer &amp; digital tinkerer');
     } else if(lower === 'pwd'){
       printOutput('/home/thuperman');
     } else if(lower === 'ls' || lower === 'ls -la' || lower === 'ls -l'){
