@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>thuperman</title>
+<title>Thuperman — Developer &amp; Builder</title>
+<meta name="description" content="I'm Thuperman — a developer and tech enthusiast building cool things with code.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230b0e10'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='monospace' font-size='40' font-weight='700' fill='%234fe36b'%3Et%3C/text%3E%3C/svg%3E">
 <style>
 :root{
   --bg: #0b0e10;
@@ -215,7 +217,7 @@ form.inputline .ps{ flex-shrink:0; }
     <span class="dot red"></span>
     <span class="dot yellow"></span>
     <span class="dot green"></span>
-    <span class="title-label">thuperman@portfolio:/span>
+    <span class="title-label">thuperman@portfolio:~</span>
   </div>
 
   <div class="screen" id="screen">
@@ -364,6 +366,9 @@ window.RESUME = {
 
   let currentDir = '~';
   let awaitingSudoPassword = false;
+  let authenticated = false;
+  let awaitingLoginPassword = true;
+  const ACCESS_PASSWORD = 'thuper@21';
 
   function promptText(){
     return `thuperman@portfolio:${currentDir}$`;
@@ -476,8 +481,42 @@ window.RESUME = {
   }
 
 
+  function showLoginPrompt(){
+    printOutput('<span class="accent">ACCESS RESTRICTED</span> — enter the portfolio password to continue.');
+    const line = el('div','prompt-line');
+    line.innerHTML = '<span class="ps"></span><span class="cmd"></span>';
+    line.querySelector('.ps').textContent = 'password:';
+    line.querySelector('.cmd').textContent = '••••••••';
+    content.appendChild(line);
+    input.type = 'password';
+    input.placeholder = 'enter password';
+    input.classList.add('sudo-password');
+    scrollDown();
+  }
+
   function runCommand(raw){
     const cmd = raw.trim();
+
+    // Initial access gate: no terminal commands run until the password is correct.
+    if(awaitingLoginPassword){
+      if(raw === ACCESS_PASSWORD){
+        authenticated = true;
+        awaitingLoginPassword = false;
+        input.type = 'text';
+        input.placeholder = '';
+        input.classList.remove('sudo-password');
+        printPromptEcho('••••••••');
+        printOutput('<span class="accent">ACCESS GRANTED</span> — welcome to thuperman@portfolio.');
+        printOutput('Type <span class="accent">help</span> to see what you can do.');
+      } else {
+        printPromptEcho('••••••••');
+        printOutput('Access denied. Incorrect password.', 'err');
+        input.type = 'password';
+        input.classList.add('sudo-password');
+      }
+      scrollDown();
+      return;
+    }
 
     if(awaitingSudoPassword){
       awaitingSudoPassword = false;
@@ -642,8 +681,8 @@ window.RESUME = {
     const val = input.value;
     input.value = '';
     runCommand(val);
-    input.type = awaitingSudoPassword ? 'password' : 'text';
-    input.classList.toggle('sudo-password', awaitingSudoPassword);
+    input.type = (awaitingLoginPassword || awaitingSudoPassword) ? 'password' : 'text';
+    input.classList.toggle('sudo-password', awaitingLoginPassword || awaitingSudoPassword);
     screen.appendChild(form);
     scrollDown();
     input.focus();
@@ -668,6 +707,10 @@ window.RESUME = {
       if(match) input.value = match;
     }
   });
+
+  // Initial login gate.
+  showLoginPrompt();
+  input.focus();
 
   // clicking anywhere in the screen focuses the live input
   screen.addEventListener('click', ()=> input.focus());
