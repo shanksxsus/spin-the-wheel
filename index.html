@@ -502,7 +502,7 @@ window.RESUME = {
     scrollDown();
   }
 
-  function runCommand(raw){
+  async function runCommand(raw){
     const cmd = raw.trim();
 
     // Initial access gate: no terminal commands run until the password is correct.
@@ -686,16 +686,20 @@ window.RESUME = {
     scrollDown();
   }
 
-  form.addEventListener('submit', (e)=>{
+  form.addEventListener('submit', async (e)=>{
     e.preventDefault();
+    if(form.dataset.busy === '1') return;
+    form.dataset.busy = '1';
+
     const val = input.value;
     input.value = '';
-    runCommand(val);
+    await runCommand(val);
     input.type = (awaitingLoginPassword || awaitingSudoPassword) ? 'password' : 'text';
     input.classList.toggle('sudo-password', awaitingLoginPassword || awaitingSudoPassword);
     screen.appendChild(form);
     scrollDown();
     input.focus();
+    form.dataset.busy = '0';
   });
 
   input.addEventListener('keydown', (e)=>{
