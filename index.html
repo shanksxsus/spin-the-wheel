@@ -368,7 +368,15 @@ window.RESUME = {
   let awaitingSudoPassword = false;
   let authenticated = false;
   let awaitingLoginPassword = true;
-  const ACCESS_PASSWORD = 'thuper@21';
+  const ACCESS_PASSWORD_HASH = '46a6e6160866a9429aa70536b17df4f39d27849f033aa43c57c109e7dca62fce';
+
+  async function sha256(value){
+    const data = new TextEncoder().encode(value);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hashBuffer))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
 
   function promptText(){
     return `thuperman@portfolio:${currentDir}$`;
@@ -499,7 +507,9 @@ window.RESUME = {
 
     // Initial access gate: no terminal commands run until the password is correct.
     if(awaitingLoginPassword){
-      if(raw === ACCESS_PASSWORD){
+      const enteredHash = await sha256(raw);
+
+      if(enteredHash === ACCESS_PASSWORD_HASH){
         authenticated = true;
         awaitingLoginPassword = false;
         input.type = 'text';
